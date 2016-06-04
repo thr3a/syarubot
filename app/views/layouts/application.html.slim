@@ -12,7 +12,9 @@ html
 
   body
   .container
-    .row
-      .col-lg-9
-        = bootstrap_flash
-        = yield
+    / = bootstrap_flash
+    - flash.each do |type, msg|
+      div class="alert alert-#{type}"
+        - Array(msg).each do |m|
+          p = m
+    = yield
