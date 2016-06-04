@@ -48,3 +48,4 @@ end
 gem "twitter-bootstrap-rails"
 gem "therubyracer"
 gem "slim-rails"
+gem 'bootstrap_form'
