@@ -54,6 +54,7 @@ git rm --cached -f config/database.yml
 
 ```
 bundle exec cap production deploy:mkdir
+bundle exec cap production deploy:check
 bundle exec cap production deploy:upload
 bundle exec cap production deploy
 ```
