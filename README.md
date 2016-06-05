@@ -18,7 +18,7 @@ bundle install
 
 # 初期設定
 
-** config/application.rb ** にてサービス名の設定
+**config/application.rb** にてサービス名の設定
 
 ```ruby
 module Myrails
@@ -29,6 +29,8 @@ end
 ```
 
 # デプロイの設定
+
+予めデプロイ先にはrbev＆ruby2.3.0&nginxを入れておく
 
 **.gitignore** に以下を追加
 
@@ -44,9 +46,9 @@ git rm --cached -f config/secrets.yml
 git rm --cached -f config/database.yml
 ```
 
-** config/database.yml ** と ** config/secrets.yml ** の設定を行う
+**config/database.yml** と **config/secrets.yml** の設定を行う
 
-** config/deploy/production.rb ** と ** config/deploy.rb ** でそれぞれ設定
+**config/deploy/production.rb** と **config/deploy.rb** でそれぞれ設定
 
 # デプロイ
 
