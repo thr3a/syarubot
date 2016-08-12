@@ -43,7 +43,7 @@ set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'tmp/cache', '
 
 set :rbenv_type, :system
 set :rbenv_ruby, '2.3.0'
-set :rbenv_path, '/home/user/.rbenv'
+set :rbenv_path, "/home/#{fetch(:user)}/.rbenv"
 set :puma_threads,    [4, 16]
 set :puma_workers,    1
 set :puma_bind,       "unix://#{shared_path}/tmp/sockets/puma.sock"
