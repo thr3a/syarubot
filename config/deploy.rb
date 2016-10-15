@@ -81,7 +81,7 @@ namespace :deploy do
     on roles(:app), in: :sequence, wait: 5 do
       invoke 'puma:stop'
       with rails_env: fetch(:rails_env) do
-        within current_path do
+        within release_path do
           execute :bundle, :exec, :rake, 'bot:start'
         end
       end
