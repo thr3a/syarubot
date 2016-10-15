@@ -28,8 +28,8 @@ class User < ActiveRecord::Base
     end
     
     self.update siritori_word: bot_answer.name_kana[-1]
-    self.increment(:siritori_cnt)
-    self.increment(:max_siritori_cnt)
+    self.increment!(:siritori_cnt, 1)
+    self.increment!(:max_siritori_cnt, 1)
     self.message = "#{station.name_orig}駅は知ってるのだ♪次はわれの番、#{bot_answer.name}駅（#{bot_answer.name_kana}）なのだ♪次は「#{self.siritori_word}」なのだ♪"
   end
   
