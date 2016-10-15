@@ -2,6 +2,9 @@ namespace :bot do
   if Rails.env.development?
     ActiveRecord::Base.logger = Logger.new(STDOUT)
   end
+  if Rails.env.production?
+    Process.daemon
+  end
   
   desc "start bot"
   task start: :environment do
