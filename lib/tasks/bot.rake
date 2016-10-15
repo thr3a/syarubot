@@ -35,6 +35,15 @@ namespace :bot do
             user.siritori(match[1].strip.match(/(.+)駅$/)[1])
             user.reply(tweet.id)
           end
+        else
+          user = User.find_or_initialize_by(id: tweet.user.id)
+          if user.new_record?
+            user.scname = tweet.user.username
+            user.name = tweet.user.name
+            user.save!
+          end
+          user.message = "われにはよく分からないのだ♪作者に伝えておくのだ♪"
+          user.reply(tweet.id)
         end
       end
     end
