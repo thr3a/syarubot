@@ -1,52 +1,55 @@
 class User < ActiveRecord::Base
-
-  def siritori(user_answer = nil)
-    if user_answer
-      user_char = user_answer[0]
-      stations = Station.where(name_orig: user_answer)
-      if stations.blank?
-        msg = "われはそんな駅知らないのだ♪#{self.siritori_cnt}回続いたのだ♪また挑戦するのだ♪"
-        self.clear_siritori_session
-        return msg
-      end
-      
-      list = []
-      stations.each do |station|
-        list.concat(station.hogehoge)
-      end
-      stations = stations.where("name_kana REGEXP ?", list.uniq.map{|e|"^#{e}"}.join('|'))
-      if stations.blank?
-        msg = "なんか違うのだ♪#{self.siritori_cnt}回続いたのだ♪また挑戦するのだ♪"
-        self.clear_siritori_session
-        return msg
-      end
-      
-      station = stations.first
-      if station.name_kana[-1] == 'ん'
-        msg = "最後が「ん」なのだ♪#{self.siritori_cnt}回続いたのだ♪また挑戦するのだ♪"
-        self.clear_siritori_session
-        return msg
-      end
-      bot_answer = Station.get_random(station.name_kana[-1])
-      
-      if bot_answer.nil?
-        msg = "ぐぬぬ、われの負けなのだ…すごいのだ、#{self.siritori_cnt}回続いたのだ♪"
-        self.clear_siritori_session
-        return msg
-      end
-      
-      self.update siritori_word: bot_answer.name_kana[-1]
-      self.increment(:siritori_cnt)
-      self.increment(:max_siritori_cnt)
-      "#{station.name_orig}駅は知ってるのだ♪次はわれの番、#{bot_answer.name}駅（#{bot_answer.name_kana}）なのだ♪次は「#{self.siritori_word}」なのだ♪"
-    else
-      bot_answer = Station.get_random
-      self.update siritori_word: bot_answer.name_kana[-1], siritori_cnt: 1
-      "われは駅名しりとり駅得意なのだ♪ まずはわれの番、#{bot_answer.name}駅(#{bot_answer.name_kana})なのだ!つぎは「#{self.siritori_word}」なのだ♪"
+  attr_accessor :message
+  
+  def siritori user_answer
+    stations = Station.where(name_orig: user_answer)
+    if stations.empty?
+      self.message = "われはそんな駅知らないのだ♪#{self.siritori_cnt}回続いたのだ♪また挑戦するのだ♪"
+      return self.clear_siritori_session
     end
+    
+    list = [self.siritori_word, self.siritori_word.gsub(/ゃ|ゅ|ょ|っ/, 'ゃ'=>'や', 'ゅ'=>'ゆ', 'ょ'=>'よ', 'っ'=> 'つ').to_nfd.split('')[0]]
+    stations = stations.where("name_kana REGEXP ?", list.uniq.map{|e|"^#{e}"}.join('|'))
+    if stations.empty?
+      self.message = "なんか違うのだ♪#{self.siritori_cnt}回続いたのだ♪また挑戦するのだ♪"
+      return self.clear_siritori_session
+    end
+    
+    station = stations[0]
+    if station.name_kana[-1] == 'ん'
+      self.message = "最後が「ん」なのだ♪#{self.siritori_cnt}回続いたのだ♪また挑戦するのだ♪"
+      return self.clear_siritori_session
+    end
+    
+    bot_answer = Station.get_random(station.name_kana[-1])
+    if bot_answer.nil?
+      self.message = "ぐぬぬ、われの負けなのだ…すごいのだ、#{self.siritori_cnt}回続いたのだ♪"
+      return self.clear_siritori_session
+    end
+    
+    self.update siritori_word: bot_answer.name_kana[-1]
+    self.increment(:siritori_cnt)
+    self.increment(:max_siritori_cnt)
+    self.message = "#{station.name_orig}駅は知ってるのだ♪次はわれの番、#{bot_answer.name}駅（#{bot_answer.name_kana}）なのだ♪次は「#{self.siritori_word}」なのだ♪"
+  end
+  
+  def initialize_siritori
+    bot_answer = Station.get_random
+    self.update siritori_word: bot_answer.name_kana[-1], siritori_cnt: 1
+    self.message = "われは駅名しりとり駅得意なのだ♪ まずはわれの番、#{bot_answer.name}駅(#{bot_answer.name_kana})なのだ!つぎは「#{self.siritori_word}」なのだ♪"
   end
   
   def clear_siritori_session
     self.update(siritori_word: nil, siritori_cnt: 0)
+  end
+  
+  def reply tweet_id
+    client = Twitter::REST::Client.new do |config|
+      config.consumer_key        = Rails.application.secrets.consumer_key
+      config.consumer_secret     = Rails.application.secrets.consumer_secret
+      config.access_token        = Rails.application.secrets.access_token
+      config.access_token_secret = Rails.application.secrets.access_token_secret
+    end
+    a = client.update("@#{self.scname} #{self.message}", in_reply_to_status_id: tweet_id)
   end
 end
