@@ -3,7 +3,7 @@ lock '3.5.0'
 
 # set :application, 'my_app_name'
 # set :repo_url, 'git@example.com:me/my_repo.git'
-set :application, 'myrails'
+set :application, 'syarubot'
 set :repo_url, ->{ "file://" + Dir::pwd + "/.git" }
 set :scm, :gitcopy
 set :user, "user"
