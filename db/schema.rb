@@ -11,18 +11,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161014170019) do
+ActiveRecord::Schema.define(version: 20161015070502) do
 
   create_table "users", force: :cascade do |t|
-    t.string   "scname",        limit: 255
-    t.string   "name",          limit: 255
+    t.string   "scname",           limit: 255
+    t.string   "name",             limit: 255
     t.boolean  "weather_flag"
-    t.string   "siritori_word", limit: 255
-    t.integer  "siritori_cnt",  limit: 4
-    t.integer  "nandoku_cnt",   limit: 4
-    t.integer  "station_id",    limit: 4
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.string   "siritori_word",    limit: 255
+    t.integer  "siritori_cnt",     limit: 4,   default: 0
+    t.integer  "nandoku_cnt",      limit: 4,   default: 0
+    t.integer  "station_id",       limit: 4
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
+    t.integer  "max_siritori_cnt", limit: 4,   default: 0
   end
 
 end

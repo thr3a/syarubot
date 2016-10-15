@@ -12,9 +12,4 @@ class Station < StationBase
     [char, converted_char]
   end
   
-  def self.get_random_tester(char = nil)
-    s = Station.where("name_kana NOT LIKE ?", "%ん")
-    s = s.where("name_kana LIKE ?", "#{char}%") if char
-    s.order('RAND()').last
-  end
 end
