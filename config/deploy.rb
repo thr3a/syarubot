@@ -55,6 +55,8 @@ set :puma_preload_app, true
 set :puma_worker_timeout, nil
 set :puma_init_active_record, true
 
+set :whenever_identifier, ->{ "#{fetch(:application)}_#{fetch(:stage)}" }
+
 namespace :deploy do
 
   # after :restart, :clear_cache do
@@ -72,12 +74,17 @@ namespace :deploy do
     end
   end
 
-  after :publishing, :restart
+  after :publishing, :start_bot
 
  # for bot
-  task :killpuma do
+  task :start_bot do
     on roles(:app), in: :sequence, wait: 5 do
       invoke 'puma:stop'
+      with rails_env: fetch(:rails_env) do
+        within current_path do
+          execute :bundle, :exec, :rake, 'bot:start'
+        end
+      end
     end
   end
 
@@ -104,7 +111,7 @@ namespace :deploy do
       with rails_env: fetch(:rails_env) do
         within current_path do
           execute :bundle, :exec, :rake, 'db:create'
-      end
+        end
       end
     end
   end
