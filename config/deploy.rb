@@ -42,7 +42,7 @@ set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'tmp/cache', '
 # set :keep_releases, 5
 
 set :rbenv_type, :system
-set :rbenv_ruby, '2.3.0'
+set :rbenv_ruby, '2.3.1'
 set :rbenv_path, "/home/#{fetch(:user)}/.rbenv"
 set :puma_threads,    [4, 16]
 set :puma_workers,    1
@@ -73,6 +73,13 @@ namespace :deploy do
   end
 
   after :publishing, :restart
+
+ # for bot
+  task :killpuma do
+    on roles(:app), in: :sequence, wait: 5 do
+      invoke 'puma:stop'
+    end
+  end
 
   task :mkdir do
     on roles(:app), in: :sequence, wait: 5 do
