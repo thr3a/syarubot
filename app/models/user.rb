@@ -41,15 +41,5 @@ class User < ActiveRecord::Base
   
   def clear_siritori_session
     self.update(siritori_word: nil, siritori_cnt: 0)
-  end
-  
-  def reply tweet_id
-    client = Twitter::REST::Client.new do |config|
-      config.consumer_key        = Rails.application.secrets.consumer_key
-      config.consumer_secret     = Rails.application.secrets.consumer_secret
-      config.access_token        = Rails.application.secrets.access_token
-      config.access_token_secret = Rails.application.secrets.access_token_secret
-    end
-    a = client.update("@#{self.scname} #{self.message}", in_reply_to_status_id: tweet_id)
-  end
+  end  
 end

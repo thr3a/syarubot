@@ -28,12 +28,12 @@ namespace :bot do
             user.save!
           end
           user.initialize_siritori
-          user.reply(tweet.id)
+          TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
         # 駅名しりとり返答
         when /駅$/
           if(user = User.find_by(id: tweet.user.id))
             user.siritori(match[1].strip.match(/(.+)駅$/)[1])
-            user.reply(tweet.id)
+            TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
           end
         else
           user = User.find_or_initialize_by(id: tweet.user.id)
@@ -42,10 +42,14 @@ namespace :bot do
             user.name = tweet.user.name
             user.save!
           end
-          user.message = "われにはよく分からないのだ♪作者に伝えておくのだ♪"
-          user.reply(tweet.id)
+          TwitterBot.new(message: "われにはよく分からないのだ♪作者に伝えておくのだ♪", scname: user.scname, reply_to: tweet.id).tweet
         end
       end
     end
+  end
+  
+  desc ""
+  task debug: :environment do
+    TwitterBot.new(message: '寒い冬には雪見だいふくが一番').tweet
   end
 end
