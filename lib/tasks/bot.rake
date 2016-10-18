@@ -17,7 +17,7 @@ namespace :bot do
     end
     TweetStream::Client.new.userstream do |tweet|
       # リプライ
-      if match = tweet.text.match(/^@#{Rails.application.secrets.own_name} (.+)/)
+      if match = tweet.text.match(/^@#{Rails.application.secrets.own_name}[ |　|\n]+(.+)/)
         case match[1]
         # 駅名しりとりスタート
         when /駅名しりとり/
