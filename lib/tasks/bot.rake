@@ -44,6 +44,9 @@ namespace :bot do
           end
           TwitterBot.new(message: "われにはよく分からないのだ♪作者に伝えておくのだ♪", scname: user.scname, reply_to: tweet.id).tweet
         end
+      # シャルロッテに反応
+      elsif tweet.text.match(/シャルロッテ/)
+        TwitterBot.new(message: 'マスター♪なんか呼ばれた気がしたのだ♪', scname: tweet.user.username, reply_to: tweet.id).tweet
       end
     end
   end
