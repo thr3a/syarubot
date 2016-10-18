@@ -23,7 +23,7 @@ namespace :bot do
         when /駅名しりとり/
           user = User.find_or_initialize_by(id: tweet.user.id)
           if user.new_record?
-            user.scname = tweet.user.username
+            user.scname = tweet.user.screen_name
             user.name = tweet.user.name
             user.save!
           end
@@ -38,7 +38,7 @@ namespace :bot do
         else
           user = User.find_or_initialize_by(id: tweet.user.id)
           if user.new_record?
-            user.scname = tweet.user.username
+            user.scname = tweet.user.screen_name
             user.name = tweet.user.name
             user.save!
           end
@@ -46,7 +46,7 @@ namespace :bot do
         end
       # シャルロッテに反応
       elsif tweet.text.match(/シャルロッテ/)
-        TwitterBot.new(message: 'マスター♪なんか呼ばれた気がしたのだ♪', scname: tweet.user.username, reply_to: tweet.id).tweet
+        TwitterBot.new(message: 'マスター♪なんか呼ばれた気がしたのだ♪', scname: tweet.user.screen_name, reply_to: tweet.id).tweet
       end
     end
   end
