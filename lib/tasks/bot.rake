@@ -66,5 +66,15 @@ namespace :bot do
       puts "#{status.text}"
     end
   end
-
+  
+  desc ""
+  task import: :environment do
+    require 'csv'
+    CSV.foreach(Rails.public_path.join('intro2.csv'), headers: true) do |data|
+      station = Station.find_by name: data['name']
+      if station.present?
+        station.update nandoku_flag: true
+      end
+    end
+  end
 end
