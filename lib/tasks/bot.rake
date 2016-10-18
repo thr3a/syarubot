@@ -35,14 +35,24 @@ namespace :bot do
             user.siritori(match[1].strip.match(/(.+)駅$/)[1])
             TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
           end
-        else
+        when /難読/
           user = User.find_or_initialize_by(id: tweet.user.id)
           if user.new_record?
             user.scname = tweet.user.username
             user.name = tweet.user.name
             user.save!
           end
-          TwitterBot.new(message: "われにはよく分からないのだ♪作者に伝えておくのだ♪", scname: user.scname, reply_to: tweet.id).tweet
+          user.initialize_nandoku
+          TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
+          # 難読駅名クイズ返答
+        when /えき$/
+          if(user = User.find_by(id: tweet.user.id))
+            user.nandoku(match[1].strip.match(/(.+)えき$/)[1])
+            TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
+          end
+        # 例外処理
+        else
+          TwitterBot.new(message: "われにはよく分からないのだ♪作者に伝えておくのだ♪", scname: tweet.user.username, reply_to: tweet.id).tweet
         end
       end
     end
