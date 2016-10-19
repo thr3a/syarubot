@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161015070502) do
+ActiveRecord::Schema.define(version: 20161018223433) do
 
   create_table "users", force: :cascade do |t|
     t.string   "scname",           limit: 255
@@ -24,6 +24,7 @@ ActiveRecord::Schema.define(version: 20161015070502) do
     t.datetime "created_at",                               null: false
     t.datetime "updated_at",                               null: false
     t.integer  "max_siritori_cnt", limit: 4,   default: 0
+    t.integer  "nandoku_id",       limit: 4
   end
 
 end

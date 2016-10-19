@@ -35,14 +35,24 @@ namespace :bot do
             user.siritori(match[1].strip.match(/(.+)駅$/)[1])
             TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
           end
-        else
+        when /難読/
           user = User.find_or_initialize_by(id: tweet.user.id)
           if user.new_record?
             user.scname = tweet.user.screen_name
             user.name = tweet.user.name
             user.save!
           end
-          TwitterBot.new(message: "われにはよく分からないのだ♪作者に伝えておくのだ♪", scname: user.scname, reply_to: tweet.id).tweet
+          user.initialize_nandoku
+          TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
+          # 難読駅名クイズ返答
+        when /えき$/
+          if(user = User.find_by(id: tweet.user.id))
+            user.nandoku(match[1].strip.match(/(.+)えき$/)[1])
+            TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
+          end
+        # 例外処理
+        else
+          TwitterBot.new(message: "われにはよく分からないのだ♪作者に伝えておくのだ♪", scname: tweet.user.username, reply_to: tweet.id).tweet
         end
       # シャルロッテに反応
       elsif tweet.text.match(/シャルロッテ/)
@@ -69,5 +79,15 @@ namespace :bot do
       puts "#{status.text}"
     end
   end
-
+  
+  desc ""
+  task import: :environment do
+    require 'csv'
+    CSV.foreach(Rails.public_path.join('intro2.csv'), headers: true) do |data|
+      station = Station.find_by name: data['name']
+      if station.present?
+        station.update nandoku_flag: true
+      end
+    end
+  end
 end

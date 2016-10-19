@@ -41,5 +41,24 @@ class User < ActiveRecord::Base
   
   def clear_siritori_session
     self.update(siritori_word: nil, siritori_cnt: 0)
-  end  
+  end
+  
+  def nandoku user_answer
+    answer = Station.find_by(id: self.nandoku_id, name_kana: user_answer)
+    if answer.present?
+      self.increment!(:nandoku_cnt, 1)
+      question = Station.where(nandoku_flag: true).order('RAND()').last
+      self.update nandoku_id: question.id
+      self.message = "正解なのだ♪次は#{question.name}駅のよみを答えるのだ♪"
+    else
+      self.update(nandoku_id: nil, nandoku_cnt: 0)
+      self.message = "違うっぽいのだ♪#{self.nandoku_cnt}回続いたのだ♪また挑戦するのだ♪"
+    end
+  end
+  
+  def initialize_nandoku
+    question = Station.where(nandoku_flag: true).order('RAND()').last
+    self.update nandoku_id: question.id, nandoku_cnt: 1
+    self.message = "われは駅に詳しいのだ♪まずは #{question.name} 駅なのだ♪「とうきょうえき」のように答えないと反応しないので気をつけるのだ♪"
+  end
 end
