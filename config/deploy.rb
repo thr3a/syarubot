@@ -69,18 +69,9 @@ namespace :deploy do
   # end
   desc 'Restart application'
   task :restart do
-    on roles(:app), in: :sequence, wait: 5 do
-      invoke 'puma:restart'
-    end
-  end
-
-  after :publishing, :start_bot
-
- # for bot
-  task :start_bot do
-    on roles(:app), in: :sequence, wait: 5 do
+    on roles(:app) do
       execute 'pkill -f rake'
-      invoke 'puma:stop'
+      invoke 'puma:restart'
       with rails_env: fetch(:rails_env) do
         within release_path do
           execute :bundle, :exec, :rake, 'bot:start'
@@ -88,6 +79,8 @@ namespace :deploy do
       end
     end
   end
+  
+  after :publishing, :restart
 
   task :mkdir do
     on roles(:app), in: :sequence, wait: 5 do
