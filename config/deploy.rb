@@ -79,6 +79,7 @@ namespace :deploy do
  # for bot
   task :start_bot do
     on roles(:app), in: :sequence, wait: 5 do
+      execute 'pkill -f rake'
       invoke 'puma:stop'
       with rails_env: fetch(:rails_env) do
         within release_path do
