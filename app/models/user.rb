@@ -51,8 +51,8 @@ class User < ActiveRecord::Base
       self.update nandoku_id: question.id
       self.message = "正解なのだ♪次は#{question.name}駅のよみを答えるのだ♪"
     else
-      self.update(nandoku_id: nil, nandoku_cnt: 0)
       self.message = "違うっぽいのだ♪#{self.nandoku_cnt}回続いたのだ♪また挑戦するのだ♪"
+      self.update(nandoku_id: nil, nandoku_cnt: 0)
     end
   end
   
