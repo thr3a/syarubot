@@ -24,5 +24,7 @@ module Myrails
     config.active_record.raise_in_transactional_callbacks = true
 
     config.title = "My rails"
+    
+    config.name = {'alive' => 'シャルロッテ@リンク継続中♪', 'dead' => 'シャルロッテ@リンク停止中…'}
   end
 end

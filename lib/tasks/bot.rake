@@ -63,7 +63,7 @@ namespace :bot do
   
   desc ""
   task debug: :environment do
-    TwitterBot.new(message: '寒い冬には雪見だいふくが一番').tweet
+    TwitterBot.new(message: "寒い冬には雪見だいふくが一番 #{Time.now.strftime('%N')}").tweet
   end
   
   desc ""
@@ -107,4 +107,10 @@ namespace :bot do
     # TODO: セリフのバリエーションをもう少し
     TwitterBot.new(message: "わぁ～#{word}なのだ～♪　われは#{word}に目がないのだ♪").tweet
   end
+  
+  desc "強制的にプロフィールを正常時に戻す"
+  task refresh_profile: :environment do
+    TwitterBot.new.change_profile('alive')
+  end
+  
 end

@@ -2,7 +2,7 @@ class TwitterBot
   include ActiveModel::Model
   attr_accessor :message, :reply_to, :scname
   validates :message, presence: true
-    
+  
   def tweet
     @client = Twitter::REST::Client.new do |config|
       config.consumer_key        = Rails.application.secrets.consumer_key
@@ -17,15 +17,16 @@ class TwitterBot
         else
           @client.update!(@message)
         end
+        if @client.user.name == Rails.application.config.name['dead']
+          self.change_profile 'alive'
+        end
       rescue Twitter::Error::DuplicateStatus
         @message << ' ' + ('_' * rand(1..5))
         retry
       rescue Twitter::Error::Forbidden => e
         p e.class
         p e.message
-        icon = open(Rails.public_path.join('dead.png'))
-        @client.update_profile name: 'シャルロッテ@リンク停止中…'
-        @client.update_profile_image icon
+        self.change_profile 'dead'
       rescue => e
         # TODO: later
         p e.class
@@ -43,5 +44,11 @@ class TwitterBot
     tweets = client.home_timeline({count:200})
     tweets.delete_if{|t| t.text.match(/^RT |^@/) || !t.source.match(/twitter/i)}
     return tweets
+  end
+  
+  def change_profile status
+    icon = open(Rails.public_path.join("#{status}.png"))
+    @client.update_profile name: Rails.application.config.name[status]
+    @client.update_profile_image icon
   end
 end
