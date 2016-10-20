@@ -92,10 +92,11 @@ namespace :bot do
   end
   
   desc ""
-  task search: :environment do
+  task routine: :environment do
     japanese_regex = /\p{Hiragana}|\p{Katakana}|[一-龠々]/
     words = []
     tweets = TwitterBot.new.get_timeline
+    # TODO: 結構重いので先にハッシュタグURLを削る
     tweets = tweets.map {|t|t.text}.join(' ')
     nm = Natto::MeCab.new(dicdir: "/usr/local/lib/mecab/dic/mecab-ipadic-neologd")
     nm.parse(tweets) do |n|
@@ -103,6 +104,7 @@ namespace :bot do
       words << n.surface
     end
     word = words.sample
+    # TODO: セリフのバリエーションをもう少し
     TwitterBot.new(message: "わぁ～#{word}なのだ～♪　われは#{word}に目がないのだ♪").tweet
   end
 end
