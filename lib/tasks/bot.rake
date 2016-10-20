@@ -52,10 +52,10 @@ namespace :bot do
           end
         # 例外処理
         else
-          TwitterBot.new(message: "われにはよく分からないのだ♪作者に伝えておくのだ♪", scname: tweet.user.username, reply_to: tweet.id).tweet
+          TwitterBot.new(message: "われにはよく分からないのだ♪作者に伝えておくのだ♪", scname: tweet.user.screen_name, reply_to: tweet.id).tweet
         end
       # シャルロッテに反応
-      elsif tweet.text.match(/シャルロッテ/)
+      elsif tweet.text.match(/^(?!RT |@).*シャルロッテ/)
         TwitterBot.new(message: 'マスター♪なんか呼ばれた気がしたのだ♪', scname: tweet.user.screen_name, reply_to: tweet.id).tweet
       end
     end
