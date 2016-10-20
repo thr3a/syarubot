@@ -1,8 +1,7 @@
-# 出力先のログファイルの指定
-set :output, 'log/crontab.log'
-# ジョブの実行環境の指定
-set :environment, :production
+set :output, 'log/crontab.log' # 出力先のログファイルの指定
+set :environment, :production # ジョブの実行環境の指定
+job_type :rbenv_rake, %q!eval "$(rbenv init -)"; cd :path && :environment_variable=:environment bundle exec rake :task --silent :output!
 
-every 15.minutes do
-  rake "bot:search"
+every 1.minutes do
+  rbenv_rake "bot:search"
 end
