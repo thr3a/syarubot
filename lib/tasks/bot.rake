@@ -100,7 +100,7 @@ namespace :bot do
     tweets = tweets.map {|t|t.text}.join(' ')
     nm = Natto::MeCab.new(dicdir: "/usr/local/lib/mecab/dic/mecab-ipadic-neologd")
     nm.parse(tweets) do |n|
-      next unless(n.feature.split(',')[0] == '名詞' && n.surface =~ japanese_regex)
+      next unless(n.feature.split(',')[0] == '名詞' && n.surface =~ japanese_regex && n.surface.length > 1)
       words << n.surface
     end
     word = words.sample
