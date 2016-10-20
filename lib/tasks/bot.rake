@@ -90,4 +90,19 @@ namespace :bot do
       end
     end
   end
+  
+  desc ""
+  task search: :environment do
+    japanese_regex = /\p{Hiragana}|\p{Katakana}|[一-龠々]/
+    words = []
+    tweets = TwitterBot.new.get_timeline
+    tweets = tweets.map {|t|t.text}.join(' ')
+    nm = Natto::MeCab.new(dicdir: "/usr/local/lib/mecab/dic/mecab-ipadic-neologd")
+    nm.parse(tweets) do |n|
+      next unless(n.feature.split(',')[0] == '名詞' && n.surface =~ japanese_regex)
+      words << n.surface
+    end
+    word = words.sample
+    TwitterBot.new(message: "わぁ～#{word}なのだ～♪　われは#{word}に目がないのだ♪").tweet
+  end
 end
