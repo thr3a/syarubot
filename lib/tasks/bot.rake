@@ -113,4 +113,27 @@ namespace :bot do
     TwitterBot.new.change_profile('alive')
   end
   
+  desc ""
+  task hoge: :environment do
+    # LV1
+    ２文字　３つ
+    ３文字　３つ
+    東日本 1..23　３つ
+    西日本 24..47
+    東西南北
+    
+    4文字
+    
+    Station
+    東のつく駅名
+    4文字の駅名
+    〜県にある駅名
+    最後が〜で終わる駅名
+    〜線の駅名
+    # LV  2
+    
+    # 5
+    
+  end
+  
 end
