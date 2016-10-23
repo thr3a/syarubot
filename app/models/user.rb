@@ -116,7 +116,7 @@ class User < ActiveRecord::Base
     when 'char'
       stations = Station.where("`name_orig` LIKE ?", "%#{quiz_condition}%")
     when 'minlen'
-      stations = Station.where("CHAR_LENGTH(`name_orig`) > ?", quiz_condition.to_i)
+      stations = Station.where("CHAR_LENGTH(`name_orig`) >= ?", quiz_condition.to_i)
     end
     stations = stations.where(name_orig: user_answer)
     if stations.count >= 3
