@@ -130,16 +130,4 @@ namespace :bot do
     TwitterBot.new.change_profile('alive')
   end
   
-  # desc ""
-  # task hoge: :environment do
-  #   u = User.find_by id:'114514'
-  #   u.initialize_five_bomber
-  #   10000.times do
-  #     u.five_bomber(u.cheat_five_bomber_question)
-  #     p u.message
-  #     if u.message.include? '違'
-  #       break
-  #     end
-  #   end
-  # end
 end

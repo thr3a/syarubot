@@ -78,48 +78,48 @@ class User < ActiveRecord::Base
   end
   
   def set_five_bomber_question
-    quiz_type = %w"len zone pref char minlen".sample
+    quiz_types = %w"len zone pref char minlen"
+    if self.quiz_type.present?
+      quiz_types.delete(self.quiz_type)
+    end
+    quiz_type = quiz_types.sample
     case quiz_type
     when 'len'
-      len = [2,3].sample
-      self.message = "#{len}文字の駅を３つ答えるのだ♪"
-      quiz_type += ":#{len}"
+      quiz_condition = [2,3].sample
+      self.message = "#{quiz_condition}文字の駅を３つ答えるのだ♪"
     when 'zone'
       zone = [{label:'東日本(~中部地方まで)',pref_ids:'1..23'},{label:'西日本(近畿地方以降)',pref_ids:'24..47'}].sample
+      quiz_condition = zone[:pref_ids]
       self.message = "#{zone[:label]}にある駅を3つ答えるのだ♪"
-      quiz_type += ":#{zone[:pref_ids]}"
     when 'pref'
       pref = Pref.all.sample
+      quiz_condition = pref.id
       self.message = "#{pref.name}にある駅を3つ答えるのだ♪"
-      quiz_type += ":#{pref.id}"
     when 'char'
-      char = %w"東 西 南 北".sample
-      self.message = "名前に「#{char}」が入る駅を3つ答えるのだ♪"
-      quiz_type += ":#{char}"
+      quiz_condition = %w"東 西 南 北".sample
+      self.message = "名前に「#{quiz_condition}」が入る駅を3つ答えるのだ♪"
     when 'minlen'
-      len = 4
-      self.message = "#{len}文字以上の駅を3つ答えるのだ♪"
-      quiz_type += ":#{len}"
+      quiz_condition = 4
+      self.message = "#{quiz_condition}文字以上の駅を3つ答えるのだ♪"
     end
-    self.update quiz_type: quiz_type
+    self.update quiz_type: quiz_type, quiz_condition: quiz_condition
   end
   
   def check_five_bomber_question user_answer
     user_answer = user_answer.gsub(/　/,' ').split(' ').map{|s|s.gsub(/駅$/, '')}
     return false if user_answer.length < 3
-    quiz_type, quiz_condition = self.quiz_type.split(':')
-    case quiz_type
+    case self.quiz_type
     when 'len'
-      stations = Station.where("CHAR_LENGTH(`name_orig`) = ?", quiz_condition.to_i)
+      stations = Station.where("CHAR_LENGTH(`name_orig`) = ?", self.quiz_condition.to_i)
     when 'zone'
-      range = Range.new(*quiz_condition.split("..").map(&:to_i))
+      range = Range.new(*self.quiz_condition.split("..").map(&:to_i))
       stations = Station.where(pref_id: range)
     when'pref'
-      stations = Station.where(pref_id: quiz_condition)
+      stations = Station.where(pref_id: self.quiz_condition)
     when 'char'
-      stations = Station.where("`name_orig` LIKE ?", "%#{quiz_condition}%")
+      stations = Station.where("`name_orig` LIKE ?", "%#{self.quiz_condition}%")
     when 'minlen'
-      stations = Station.where("CHAR_LENGTH(`name_orig`) >= ?", quiz_condition.to_i)
+      stations = Station.where("CHAR_LENGTH(`name_orig`) >= ?", self.quiz_condition.to_i)
     end
     stations = stations.where(name_orig: user_answer)
     if stations.count >= 3
@@ -129,18 +129,4 @@ class User < ActiveRecord::Base
     end
   end
   
-  # def cheat_five_bomber_question
-  #   quiz_type, quiz_condition = self.quiz_type.split(':')
-  #   case quiz_type
-  #   when 'len'
-  #     stations = Station.where("CHAR_LENGTH(`name_orig`) = ?", quiz_condition)
-  #   when 'zone','pref'
-  #     stations = Station.where(pref_id: quiz_condition)
-  #   when 'char'
-  #     stations = Station.where("`name_orig` LIKE ?", "%#{quiz_condition}%")
-  #   when 'minlen'
-  #     stations = Station.where("CHAR_LENGTH(`name_orig`) > ?", quiz_condition)
-  #   end
-  #   stations.order('RAND()').last(3).map{|e|e.name_orig+'駅'}.join(' ')
-  # end
 end
