@@ -85,7 +85,7 @@ class User < ActiveRecord::Base
       self.message = "#{len}文字の駅を３つ答えるのだ♪"
       quiz_type += ":#{len}"
     when 'zone'
-      zone = [{label:'東日本(~中部地方まで)',pref_ids:1..23},{label:'西日本(近畿地方以降)',pref_ids:24..47}].sample
+      zone = [{label:'東日本(~中部地方まで)',pref_ids:'1..23'},{label:'西日本(近畿地方以降)',pref_ids:'24..47'}].sample
       self.message = "#{zone[:label]}にある駅を3つ答えるのだ♪"
       quiz_type += ":#{zone[:pref_ids]}"
     when 'pref'
@@ -111,7 +111,10 @@ class User < ActiveRecord::Base
     case quiz_type
     when 'len'
       stations = Station.where("CHAR_LENGTH(`name_orig`) = ?", quiz_condition.to_i)
-    when 'zone','pref'
+    when 'zone'
+      range = Range.new(*quiz_condition.split("..").map(&:to_i))
+      stations = Station.where(pref_id: range)
+    when'pref'
       stations = Station.where(pref_id: quiz_condition)
     when 'char'
       stations = Station.where("`name_orig` LIKE ?", "%#{quiz_condition}%")

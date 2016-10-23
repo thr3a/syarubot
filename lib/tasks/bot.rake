@@ -31,11 +31,8 @@ namespace :bot do
           TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
         # ファイブボンバー返答
         when /駅 |駅　/
-          p 'bomber'
           if(user = User.find_by(id: tweet.user.id))
-            p match[1].strip
             user.five_bomber(match[1].strip)
-            p user.message
             TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
           end
         # 駅名しりとりスタート
