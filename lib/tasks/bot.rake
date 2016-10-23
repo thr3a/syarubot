@@ -19,6 +19,25 @@ namespace :bot do
       # リプライ
       if match = tweet.text.match(/^@#{Rails.application.secrets.own_name}[ |　|\n]+(.+)/)
         case match[1]
+        # ファイブボンバースタート
+        when /ファイブボンバー/
+          user = User.find_or_initialize_by(id: tweet.user.id)
+          if user.new_record?
+            user.scname = tweet.user.screen_name
+            user.name = tweet.user.name
+            user.save!
+          end
+          user.initialize_five_bomber
+          TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
+        # ファイブボンバー返答
+        when /駅 |駅　/
+          p 'bomber'
+          if(user = User.find_by(id: tweet.user.id))
+            p match[1].strip
+            user.five_bomber(match[1].strip)
+            p user.message
+            TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
+          end
         # 駅名しりとりスタート
         when /駅名しりとり/
           user = User.find_or_initialize_by(id: tweet.user.id)
@@ -35,6 +54,7 @@ namespace :bot do
             user.siritori(match[1].strip.match(/(.+)駅$/)[1])
             TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
           end
+        # 難読駅名クイズスタート
         when /難読/
           user = User.find_or_initialize_by(id: tweet.user.id)
           if user.new_record?
@@ -44,7 +64,7 @@ namespace :bot do
           end
           user.initialize_nandoku
           TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
-          # 難読駅名クイズ返答
+        # 難読駅名クイズ返答
         when /えき$/
           if(user = User.find_by(id: tweet.user.id))
             user.nandoku(match[1].strip.match(/(.+)えき$/)[1])
@@ -113,27 +133,16 @@ namespace :bot do
     TwitterBot.new.change_profile('alive')
   end
   
-  desc ""
-  task hoge: :environment do
-    # LV1
-    ２文字　３つ
-    ３文字　３つ
-    東日本 1..23　３つ
-    西日本 24..47
-    東西南北
-    
-    4文字
-    
-    Station
-    東のつく駅名
-    4文字の駅名
-    〜県にある駅名
-    最後が〜で終わる駅名
-    〜線の駅名
-    # LV  2
-    
-    # 5
-    
-  end
-  
+  # desc ""
+  # task hoge: :environment do
+  #   u = User.find_by id:'114514'
+  #   u.initialize_five_bomber
+  #   10000.times do
+  #     u.five_bomber(u.cheat_five_bomber_question)
+  #     p u.message
+  #     if u.message.include? '違'
+  #       break
+  #     end
+  #   end
+  # end
 end
