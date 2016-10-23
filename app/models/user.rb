@@ -65,16 +65,18 @@ class User < ActiveRecord::Base
   def five_bomber user_answer
     if self.check_five_bomber_question(user_answer)
       self.set_five_bomber_question
-      self.message = "すごいのだ♪次の問題、#{self.message}"
+      self.update quiz_count: self.quiz_count+1, quiz_type: self.quiz_type, quiz_condition: self.quiz_condition
+      self.message = "すごいのだ♪では第#{self.quiz_count}問、#{self.message}"
     else
-      self.message = "なんか違うっぽいのだ♪また挑戦するのだ♪"
-      self.update(quiz_type: nil)
+      self.message = "なんか違うっぽいのだ♪#{self.quiz_count}回続いたのだ♪また挑戦するのだ♪"
+      self.update(quiz_type: nil, quiz_condition: nil)
     end
   end
   
   def initialize_five_bomber
     self.set_five_bomber_question
-    self.message = "われは駅に詳しいのだ♪では問題、"+ self.message+"「○○駅 ○○駅 ○○駅」のようにスペースで区切ってリプライなのだ♪"
+    self.update quiz_count: 1, quiz_type: self.quiz_type, quiz_condition: self.quiz_condition
+    self.message = "われは駅に詳しいのだ♪では第#{self.quiz_count}門、"+ self.message+"「○○駅 ○○駅 ○○駅」のようにスペースで区切ってリプライなのだ♪"
   end
   
   def set_five_bomber_question
@@ -82,27 +84,26 @@ class User < ActiveRecord::Base
     if self.quiz_type.present?
       quiz_types.delete(self.quiz_type)
     end
-    quiz_type = quiz_types.sample
-    case quiz_type
+    self.quiz_type = quiz_types.sample
+    case self.quiz_type
     when 'len'
-      quiz_condition = [2,3].sample
-      self.message = "#{quiz_condition}文字の駅を３つ答えるのだ♪"
+      self.quiz_condition = [2,3].sample
+      self.message = "#{self.quiz_condition}文字の駅を３つ答えるのだ♪"
     when 'zone'
       zone = [{label:'東日本(~中部地方まで)',pref_ids:'1..23'},{label:'西日本(近畿地方以降)',pref_ids:'24..47'}].sample
-      quiz_condition = zone[:pref_ids]
+      self.quiz_condition = zone[:pref_ids]
       self.message = "#{zone[:label]}にある駅を3つ答えるのだ♪"
     when 'pref'
       pref = Pref.all.sample
-      quiz_condition = pref.id
+      self.quiz_condition = pref.id
       self.message = "#{pref.name}にある駅を3つ答えるのだ♪"
     when 'char'
-      quiz_condition = %w"東 西 南 北".sample
-      self.message = "名前に「#{quiz_condition}」が入る駅を3つ答えるのだ♪"
+      self.quiz_condition = %w"東 西 南 北".sample
+      self.message = "名前に「#{self.quiz_condition}」が入る駅を3つ答えるのだ♪"
     when 'minlen'
-      quiz_condition = 4
-      self.message = "#{quiz_condition}文字以上の駅を3つ答えるのだ♪"
+      self.quiz_condition = 4
+      self.message = "#{self.quiz_condition}文字以上の駅を3つ答えるのだ♪"
     end
-    self.update quiz_type: quiz_type, quiz_condition: quiz_condition
   end
   
   def check_five_bomber_question user_answer

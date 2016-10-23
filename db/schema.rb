@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161023161448) do
+ActiveRecord::Schema.define(version: 20161023165800) do
 
   create_table "tweets", force: :cascade do |t|
     t.string   "tweet",      limit: 255
@@ -36,6 +36,7 @@ ActiveRecord::Schema.define(version: 20161023161448) do
     t.string   "quiz_type",        limit: 255
     t.integer  "quiz_level",       limit: 4,   default: 0
     t.string   "quiz_condition",   limit: 255
+    t.integer  "quiz_count",       limit: 4,   default: 0
   end
 
 end
