@@ -90,7 +90,17 @@ class User < ActiveRecord::Base
       self.quiz_condition = [2,3].sample
       self.message = "#{self.quiz_condition}文字の駅を３つ答えるのだ♪"
     when 'zone'
-      zone = [{label:'東日本(~中部地方まで)',pref_ids:'1..23'},{label:'西日本(近畿地方以降)',pref_ids:'24..47'}].sample
+      zone = [
+        {label:'東日本(~中部地方まで)',pref_ids:'1..23'},
+        {label:'西日本(近畿地方以降)',pref_ids:'24..47'},
+        {label:'東北地方',pref_ids:'2..7'},
+        {label:'関東地方',pref_ids:'8..14'},
+        {label:'中部地方',pref_ids:'15..23'},
+        {label:'近畿(関西)地方',pref_ids:'24..30'},
+        {label:'中国地方',pref_ids:'31..35'},
+        {label:'四国地方',pref_ids:'36..39'},
+        {label:'九州地方',pref_ids:'40..46'}
+      ].sample
       self.quiz_condition = zone[:pref_ids]
       self.message = "#{zone[:label]}にある駅を3つ答えるのだ♪"
     when 'pref'
@@ -98,7 +108,7 @@ class User < ActiveRecord::Base
       self.quiz_condition = pref.id
       self.message = "#{pref.name}にある駅を3つ答えるのだ♪"
     when 'char'
-      self.quiz_condition = %w"東 西 南 北".sample
+      self.quiz_condition = %w"東 西 南 北 本".sample
       self.message = "名前に「#{self.quiz_condition}」が入る駅を3つ答えるのだ♪"
     when 'minlen'
       self.quiz_condition = 4
