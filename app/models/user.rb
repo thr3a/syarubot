@@ -36,7 +36,7 @@ class User < ActiveRecord::Base
   def initialize_siritori
     bot_answer = Station.get_random
     self.update siritori_word: bot_answer.name_kana[-1], siritori_cnt: 1
-    self.message = "われは駅名しりとり駅得意なのだ♪ まずはわれの番、#{bot_answer.name}駅(#{bot_answer.name_kana})なのだ!つぎは「#{self.siritori_word}」なのだ♪"
+    self.message = "われは駅名しりとり駅得意なのだ♪ まずはわれの番、#{bot_answer.name}駅(#{bot_answer.name_kana})なのだ!つぎは「#{self.siritori_word}」なのだ♪「東京駅」のように答えるのだ♪"
   end
   
   def clear_siritori_session
