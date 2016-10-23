@@ -41,7 +41,7 @@ class TwitterBot
       config.access_token        = Rails.application.secrets.access_token
       config.access_token_secret = Rails.application.secrets.access_token_secret
     end
-    tweets = client.home_timeline({count:200})
+    tweets = client.home_timeline({count:200, exclude_replies: true, include_rts: false})
     tweets.delete_if{|t| t.text.match(/^RT |^@/) || !t.source.match(/twitter/i)}
     return tweets
   end
