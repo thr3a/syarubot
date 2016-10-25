@@ -27,8 +27,9 @@ namespace :bot do
             user.name = tweet.user.name
             user.save!
           end
-          user.initialize_five_bomber
-          TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
+          TwitterBot.new(message: "ファイブボンバーは今メンテナンス中なのだ♪今度また試すのだ♪ #{Time.now.strftime('%F %R')}", scname: user.scname, reply_to: tweet.id).tweet
+          # user.initialize_five_bomber
+          # TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
         # ファイブボンバー返答
         when /駅 |駅　/
           if(user = User.find_by(id: tweet.user.id))
