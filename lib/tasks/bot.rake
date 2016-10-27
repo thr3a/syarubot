@@ -68,6 +68,15 @@ namespace :bot do
             user.nandoku(match[1].strip.match(/(.+)えき$/)[1])
             TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
           end
+        # へるぷ
+        when /使い方.*教えて/
+          message = '
+・「駅名しりとり」われとしりとり勝負なのだ♪
+・「難読駅名クイズ」読めそうで読めない駅名クイズなのだ♪
+・「ファイブボンバー」工事中なのだ♪
+
+詳しくはURL先を見るのだ♪ https://thr3a.github.io/post/help/'
+          TwitterBot.new(message: message, scname: tweet.user.screen_name, reply_to: tweet.id).tweet
         # 例外処理
         else
           TwitterBot.new(message: "われにはよく分からないのだ♪作者に伝えておくのだ♪", scname: tweet.user.screen_name, reply_to: tweet.id).tweet
