@@ -95,7 +95,7 @@ namespace :bot do
           message = '
 ・「駅名しりとり」われとしりとり勝負なのだ♪
 ・「難読駅名クイズ」読めそうで読めない駅名クイズなのだ♪
-・「ファイブボンバー」工事中なのだ♪
+・「ファイブボンバー」条件にあう駅を３つ答えるのだ♪
 
 詳しくはURL先を見るのだ♪ https://thr3a.github.io/post/help/'
           TwitterBot.new(message: message, scname: tweet.user.screen_name, reply_to: tweet.id).tweet
