@@ -11,10 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161023165800) do
+ActiveRecord::Schema.define(version: 20161030110621) do
 
   create_table "tweets", force: :cascade do |t|
-    t.string   "tweet",      limit: 255
+    t.string   "id_str",     limit: 255
+    t.string   "body",       limit: 255
     t.string   "source",     limit: 255
     t.string   "name",       limit: 255
     t.datetime "created_at",             null: false
@@ -37,6 +38,10 @@ ActiveRecord::Schema.define(version: 20161023165800) do
     t.integer  "quiz_level",       limit: 4,   default: 0
     t.string   "quiz_condition",   limit: 255
     t.integer  "quiz_count",       limit: 4,   default: 0
+    t.string   "game_type",        limit: 255
+    t.integer  "game_count",       limit: 4,   default: 0
+    t.string   "game_conditon",    limit: 255
+    t.integer  "game_pass_count",  limit: 4,   default: 0
   end
 
 end
