@@ -27,9 +27,8 @@ namespace :bot do
             user.name = tweet.user.name
             user.save!
           end
-          TwitterBot.new(message: "ファイブボンバーは今メンテナンス中なのだ♪今度また試すのだ♪ #{Time.now.strftime('%F %R')}", scname: user.scname, reply_to: tweet.id).tweet
-          # user.initialize_five_bomber
-          # TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
+          user.initialize_five_bomber
+          TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
         # ファイブボンバー返答
         when /駅 |駅　/
           if(user = User.find_by(id: tweet.user.id))
@@ -43,6 +42,11 @@ namespace :bot do
             user.scname = tweet.user.screen_name
             user.name = tweet.user.name
             user.save!
+          end
+          if match[1].match(/ハード/)
+            user.update game_type: 'hard_siritori'
+          else
+            user.update game_type: 'siritori'
           end
           user.initialize_siritori
           TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
@@ -140,4 +144,10 @@ namespace :bot do
     TwitterBot.new.change_profile('alive')
   end
   
+  desc ""
+  task aaa: :environment do
+    a = User.find_by(scname: 'thr4a')
+    a.initialize_five_bomber
+    p a.message
+  end
 end
