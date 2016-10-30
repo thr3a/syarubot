@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  attr_accessor :message
+  attr_accessor :message, :user_pass_flag
   
   def siritori user_answer
     stations = Station.where(name_orig: user_answer)
@@ -69,29 +69,31 @@ class User < ActiveRecord::Base
     self.message = "われは駅に詳しいのだ♪まずは #{question.name} 駅なのだ♪「とうきょうえき」のように答えないと反応しないので気をつけるのだ♪"
   end
   
-  def five_bomber user_answer
+  def five_bomber(user_answer)
     if self.check_five_bomber_question(user_answer)
-      if self.game_count == 10
+      if self.game_count+1 == 10
         self.message = "ゲームクリアおめでとうなのだ♪流石われのマスターなのだ♪"
-        self.update(quiz_type: nil, game_condition: nil)
+        self.update(game_type: nil, quiz_type: nil, game_condition: nil, game_count: 0, game_pass_count:0)
         return
       end
       self.set_five_bomber_question
       self.update game_count: self.game_count+1, quiz_type: self.quiz_type, game_condition: self.game_condition
       if self.game_count == 6
         self.message = "すごいのだ♪ここからは少し難しくなるのだ♪では第#{self.game_count}問、#{self.message}"
+      elsif self.game_count == 9
+        self.message = "すごいのだ♪ついに最終問題、#{self.message}"
       else
         self.message = "すごいのだ♪では第#{self.game_count}問、#{self.message}"
       end
     else
       self.message = "なんか違うっぽいのだ♪#{self.game_count-1}回続いたのだ♪また挑戦するのだ♪"
-      self.update(quiz_type: nil, game_condition: nil)
+      self.update(game_type: nil, quiz_type: nil, game_condition: nil, game_count:0, game_pass_count: 0)
     end
   end
   
   def initialize_five_bomber
     self.set_five_bomber_question
-    self.update game_type: self.quiz_type, game_count: 1, game_condition: self.game_condition
+    self.update game_type: 'five_bomber', game_count: 1, quiz_type: self.quiz_type, game_condition: self.game_condition
     self.message = "全１０問ファイトなのだ♪では第#{self.game_count}問、"+ self.message+"「○○駅 ○○駅 ○○駅」のようにスペースで区切ってリプライなのだ♪"
   end
   
@@ -115,7 +117,6 @@ class User < ActiveRecord::Base
       quiz_types.delete(self.game_condition) # 前回のquiz_typeを除外
     end
     quiz_type = quiz_types.sample
-    p quiz_type
     case quiz_type[:name]
     when 'len'
       self.game_condition = quiz_type[:condition].sample
@@ -153,7 +154,8 @@ class User < ActiveRecord::Base
     self.quiz_type = quiz_type[:name]
   end
   
-  def check_five_bomber_question user_answer
+  def check_five_bomber_question(user_answer)
+    return true if self.user_pass_flag
     user_answer = user_answer.gsub(/　/,' ').split(' ').map{|s|s.gsub(/駅$/, '')}
     return false if user_answer.length < 3
     case self.quiz_type

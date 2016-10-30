@@ -72,6 +72,21 @@ namespace :bot do
             user.nandoku(match[1].strip.match(/(.+)えき$/)[1])
             TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
           end
+        # パス
+        when /パス$/
+          if(user = User.find_by(id: tweet.user.id))
+            if user.game_pass_count < 2
+              user.user_pass_flag = true
+              user.increment!(:game_pass_count, 1)
+              case user.game_type
+              when 'five_bomber'
+                user.five_bomber('')
+                TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
+              end
+            else
+              TwitterBot.new(message: 'もうパスは使えないのだ♪リセットしたい場合は、またリプしてくれれば１から遊べるのだ♪', scname: user.scname, reply_to: tweet.id).tweet
+            end
+          end
         # へるぷ
         when /使い方.*教えて/
           message = '
