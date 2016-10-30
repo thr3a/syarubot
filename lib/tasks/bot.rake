@@ -81,8 +81,10 @@ namespace :bot do
               case user.game_type
               when 'five_bomber'
                 user.five_bomber('')
-                TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
+              when 'nandoku'
+                user.nandoku('')
               end
+              TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
             else
               TwitterBot.new(message: 'もうパスは使えないのだ♪リセットしたい場合は、またリプしてくれれば１から遊べるのだ♪', scname: user.scname, reply_to: tweet.id).tweet
             end

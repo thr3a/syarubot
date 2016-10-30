@@ -50,22 +50,21 @@ class User < ActiveRecord::Base
     self.update(siritori_word: nil, siritori_cnt: 0)
   end
   
-  def nandoku user_answer
-    answer = Station.find_by(id: self.nandoku_id, name_kana: user_answer)
-    if answer.present?
-      self.increment!(:nandoku_cnt, 1)
+  def nandoku(user_answer)
+    answer = Station.find_by(id: self.game_condition, name_kana: user_answer)
+    if answer.present? || self.user_pass_flag
       question = Station.where(nandoku_flag: true).order('RAND()').last
-      self.update nandoku_id: question.id
+      self.update game_condition: question.id, game_count: self.game_count+1
       self.message = "正解なのだ♪次は#{question.name}駅のよみを答えるのだ♪"
     else
-      self.message = "違うっぽいのだ♪#{self.nandoku_cnt}回続いたのだ♪また挑戦するのだ♪"
-      self.update(nandoku_id: nil, nandoku_cnt: 0)
+      self.message = "違うっぽいのだ♪#{self.game_count}回続いたのだ♪また挑戦するのだ♪"
+      self.update game_type: nil, game_condition: nil, game_count: 0, game_pass_count: 0
     end
   end
   
   def initialize_nandoku
     question = Station.where(nandoku_flag: true).order('RAND()').last
-    self.update nandoku_id: question.id, nandoku_cnt: 1
+    self.update game_type: 'nandoku', game_condition: question.id, game_count: 1, game_pass_count: 0
     self.message = "われは駅に詳しいのだ♪まずは #{question.name} 駅なのだ♪「とうきょうえき」のように答えないと反応しないので気をつけるのだ♪"
   end
   
