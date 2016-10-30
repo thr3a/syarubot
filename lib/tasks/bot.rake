@@ -44,11 +44,10 @@ namespace :bot do
             user.save!
           end
           if match[1].match(/ハード/)
-            user.update game_type: 'hard_siritori'
+            user.initialize_hard_siritori
           else
-            user.update game_type: 'siritori'
+            user.initialize_siritori
           end
-          user.initialize_siritori
           TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
         # 駅名しりとり返答
         when /駅$/
@@ -76,13 +75,15 @@ namespace :bot do
         when /パス$/
           if(user = User.find_by(id: tweet.user.id))
             if user.game_pass_count < 2
-              user.user_pass_flag = true
+              user.use_pass_flag = true
               user.increment!(:game_pass_count, 1)
               case user.game_type
               when 'five_bomber'
                 user.five_bomber('')
               when 'nandoku'
                 user.nandoku('')
+              when 'siritori'
+                user.siritori('')
               end
               TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
             else
@@ -159,12 +160,5 @@ namespace :bot do
   desc "強制的にプロフィールを正常時に戻す"
   task refresh_profile: :environment do
     TwitterBot.new.change_profile('alive')
-  end
-  
-  desc ""
-  task aaa: :environment do
-    a = User.find_by(scname: 'thr4a')
-    a.initialize_five_bomber
-    p a.message
-  end
+  end  
 end

@@ -1,63 +1,73 @@
 class User < ActiveRecord::Base
-  attr_accessor :message, :user_pass_flag
+  attr_accessor :message, :use_pass_flag
   
   def siritori user_answer
+    if self.use_pass_flag
+      bot_answer = Station.get_random
+      self.update game_condition: bot_answer.name_kana[-1], game_count: self.game_count+1, max_siritori_cnt: self.max_siritori_cnt+1
+      self.message = "次はわれの番、#{bot_answer.name}駅（#{bot_answer.name_kana}）なのだ♪次は「#{self.game_condition}」なのだ♪"
+      return
+    end
     stations = Station.where(name_orig: user_answer)
     if stations.empty?
-      self.message = "われはそんな駅知らないのだ♪#{self.siritori_cnt}回続いたのだ♪また挑戦するのだ♪"
+      self.message = "われはそんな駅知らないのだ♪#{self.game_count-1}回続いたのだ♪また挑戦するのだ♪"
       return self.clear_siritori_session
     end
     
-    list = [self.siritori_word, self.siritori_word.gsub(/ゃ|ゅ|ょ|っ/, 'ゃ'=>'や', 'ゅ'=>'ゆ', 'ょ'=>'よ', 'っ'=> 'つ').to_nfd.split('')[0]]
+    list = [self.game_condition, self.game_condition.gsub(/ゃ|ゅ|ょ|っ/, 'ゃ'=>'や', 'ゅ'=>'ゆ', 'ょ'=>'よ', 'っ'=> 'つ').to_nfd.split('')[0]]
     stations = stations.where("name_kana REGEXP ?", list.uniq.map{|e|"^#{e}"}.join('|'))
     if stations.empty?
-      self.message = "なんか違うのだ♪#{self.siritori_cnt}回続いたのだ♪また挑戦するのだ♪"
+      self.message = "なんか違うのだ♪#{self.game_count-1}回続いたのだ♪また挑戦するのだ♪"
       return self.clear_siritori_session
     end
     
     station = stations[0]
     if station.name_kana[-1] == 'ん'
-      self.message = "最後が「ん」なのだ♪#{self.siritori_cnt}回続いたのだ♪また挑戦するのだ♪"
+      self.message = "最後が「ん」なのだ♪#{self.game_count-1}回続いたのだ♪また挑戦するのだ♪"
       return self.clear_siritori_session
     end
     
     bot_answer = Station.get_random(station.name_kana[-1])
     if bot_answer.nil?
-      self.message = "ぐぬぬ、われの負けなのだ…すごいのだ、#{self.siritori_cnt}回続いたのだ♪"
+      self.message = "ぐぬぬ、われの負けなのだ…すごいのだ、#{self.game_count-1}回続いたのだ♪"
       return self.clear_siritori_session
     end
     
-    self.update siritori_word: bot_answer.name_kana[-1]
-    self.increment!(:siritori_cnt, 1)
-    self.increment!(:max_siritori_cnt, 1)
-    self.message = "#{station.name_orig}駅は知ってるのだ♪次はわれの番、#{bot_answer.name}駅（#{bot_answer.name_kana}）なのだ♪次は「#{self.siritori_word}」なのだ♪"
+    self.update game_condition: bot_answer.name_kana[-1], game_count: self.game_count+1, max_siritori_cnt: self.max_siritori_cnt+1
+    self.message = "#{station.name_orig}駅は知ってるのだ♪次はわれの番、#{bot_answer.name}駅（#{bot_answer.name_kana}）なのだ♪次は「#{self.game_condition}」なのだ♪"
   end
   
   def initialize_siritori
-    if self.game_type == 'hard_siritori'
-      bot_answer = Station.get_random_hard
-      self.update siritori_word: bot_answer.name_kana[-1], siritori_cnt: 1
-      self.message = "われは駅名し（ﾄﾞｶｯ　シーナ「ふふふ、マスターの相手はわたしよ。せっかくだし漢字2文字に限定するわ。まずは #{bot_answer.name}駅(#{bot_answer.name_kana})だから「#{self.siritori_word}」よ。何問答えられるかしら…"
-    else
-      bot_answer = Station.get_random
-      self.update siritori_word: bot_answer.name_kana[-1], siritori_cnt: 1
-      self.message = "われは駅名しりとり駅得意なのだ♪ まずはわれの番、#{bot_answer.name}駅(#{bot_answer.name_kana})なのだ!つぎは「#{self.siritori_word}」なのだ♪「東京駅」のように答えるのだ♪"
-    end
-    
+    bot_answer = Station.get_random
+    self.update game_type: 'siritori', game_condition: bot_answer.name_kana[-1], game_count: 1, game_pass_count: 0
+    self.message = "われは駅名しりとり駅得意なのだ♪ まずはわれの番、#{bot_answer.name}駅(#{bot_answer.name_kana})なのだ!つぎは「#{self.game_condition}」なのだ♪"
   end
   
+  # def initialize_hard_siritori
+  #   if self.game_type == 'hard_siritori'
+  #     bot_answer = Station.get_random_hard
+  #     self.update siritori_word: bot_answer.name_kana[-1], siritori_cnt: 1
+  #     self.message = "われは駅名し（ﾄﾞｶｯ　シーナ「ふふふ、マスターの相手はわたしよ。せっかくだし漢字2文字に限定するわ。まずは #{bot_answer.name}駅(#{bot_answer.name_kana})だから「#{self.siritori_word}」よ。何問答えられるかしら…"
+  #   else
+  #     bot_answer = Station.get_random
+  #     self.update siritori_word: bot_answer.name_kana[-1], siritori_cnt: 1
+  #     self.message = "われは駅名しりとり駅得意なのだ♪ まずはわれの番、#{bot_answer.name}駅(#{bot_answer.name_kana})なのだ!つぎは「#{self.siritori_word}」なのだ♪「東京駅」のように答えるのだ♪"
+  #   end
+  # end
+  
+  
   def clear_siritori_session
-    self.update(siritori_word: nil, siritori_cnt: 0)
+    self.update(game_type: nil, game_condition: nil, game_count: 0, game_pass_count:0)
   end
   
   def nandoku(user_answer)
     answer = Station.find_by(id: self.game_condition, name_kana: user_answer)
-    if answer.present? || self.user_pass_flag
+    if answer.present? || self.use_pass_flag
       question = Station.where(nandoku_flag: true).order('RAND()').last
       self.update game_condition: question.id, game_count: self.game_count+1
       self.message = "正解なのだ♪次は#{question.name}駅のよみを答えるのだ♪"
     else
-      self.message = "違うっぽいのだ♪#{self.game_count}回続いたのだ♪また挑戦するのだ♪"
+      self.message = "違うっぽいのだ♪#{self.game_count-1}回続いたのだ♪また挑戦するのだ♪"
       self.update game_type: nil, game_condition: nil, game_count: 0, game_pass_count: 0
     end
   end
@@ -154,7 +164,7 @@ class User < ActiveRecord::Base
   end
   
   def check_five_bomber_question(user_answer)
-    return true if self.user_pass_flag
+    return true if self.use_pass_flag
     user_answer = user_answer.gsub(/　/,' ').split(' ').map{|s|s.gsub(/駅$/, '')}
     return false if user_answer.length < 3
     case self.quiz_type
