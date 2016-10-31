@@ -118,20 +118,18 @@ namespace :bot do
     end
   end
   
-  desc ""
+  desc "定期ツイート"
   task routine: :environment do
-    japanese_regex = /\p{Hiragana}|\p{Katakana}|[一-龠々]/
+    exclude_regex = '[^\p{Hiragana}\p{Katakana}一-龠々ー]' # 残したい文字の否定
     words = []
     tweets = TwitterBot.new.get_timeline
-    # TODO: 結構重いので先にハッシュタグURLを削る
-    tweets = tweets.map {|t|t.text}.join(' ')
+    tweets = tweets.map {|t|t.text.gsub(/#{exclude_regex}/, '')}.join(' ')
     nm = Natto::MeCab.new(dicdir: "/usr/local/lib/mecab/dic/mecab-ipadic-neologd")
     nm.parse(tweets) do |n|
-      next unless(n.feature.split(',')[0] == '名詞' && n.surface =~ japanese_regex && n.surface.length > 1)
+      next unless(n.feature.split(',')[0] == '名詞' && n.surface.length > 1)
       words << n.surface
     end
     word = words.sample
-    # TODO: セリフのバリエーションをもう少し
     TwitterBot.new(message: "わぁ～#{word}なのだ～♪　われは#{word}に目がないのだ♪").tweet
   end
   
