@@ -35,6 +35,7 @@ class TwitterBot
   end
   
   def get_timeline
+    permit_sources = "twitter|TheWorld|TweetDeck|Janetter|SobaCha|Mobile Web|twicca|Biyon|YoruFukurou"
     client = Twitter::REST::Client.new do |config|
       config.consumer_key        = Rails.application.secrets.consumer_key
       config.consumer_secret     = Rails.application.secrets.consumer_secret
@@ -42,7 +43,7 @@ class TwitterBot
       config.access_token_secret = Rails.application.secrets.access_token_secret
     end
     tweets = client.home_timeline({count:200, exclude_replies: true, include_rts: false})
-    tweets.delete_if{|t| t.text.match(/^RT |^@/) || !t.source.match(/twitter/i)}
+    tweets.delete_if{|t| t.text.match(/^RT |^@/) || !t.source.match(/#{permit_sources}/i)}
     return tweets
   end
   
