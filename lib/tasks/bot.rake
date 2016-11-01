@@ -111,11 +111,6 @@ namespace :bot do
   end
   
   desc ""
-  task debug: :environment do
-    TwitterBot.new(message: "寒い冬には雪見だいふくが一番 #{Time.now.strftime('%N')}").tweet
-  end
-  
-  desc ""
   task sample_stream: :environment do
     TweetStream.configure do |config|
       config.consumer_key       = Rails.application.secrets.consumer_key
@@ -155,8 +150,4 @@ namespace :bot do
     TwitterBot.new(message: "わぁ～#{word}なのだ～♪　われは#{word}に目がないのだ♪").tweet
   end
   
-  desc "強制的にプロフィールを正常時に戻す"
-  task refresh_profile: :environment do
-    TwitterBot.new.change_profile('alive')
-  end  
 end
