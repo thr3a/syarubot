@@ -149,15 +149,31 @@ namespace :bot do
   task routine: :environment do
     exclude_regex = '[^\p{Hiragana}\p{Katakana}一-龠々ー]' # 残したい文字の否定
     words = []
+    nm = Natto::MeCab.new(dicdir: Rails.application.config.mecab_dic_path)
     tweets = TwitterBot.new.get_timeline
     tweets = tweets.map {|t|t.text.gsub(/#{exclude_regex}/, '')}.join(' ')
-    nm = Natto::MeCab.new(dicdir: Rails.application.config.mecab_dic_path)
-    nm.parse(tweets) do |n|
-      next unless(n.feature.split(',')[0] == '名詞' && n.surface.length > 1)
-      words << n.surface
+    case rand(3) # whenの最大値+1
+    when 0
+      nm.parse(tweets) do |n|
+        next unless(n.feature.split(',')[0] == '名詞' && n.surface.length > 1)
+        words << n.surface
+      end
+      word = words.sample
+      message = "わぁ～#{word}なのだ～♪　われは#{word}に目がないのだ♪"
+    when 1
+      result = Ikku::Reviewer.new.search(tweets)
+      return if result.blank?
+      haiku = result.map{|e|e.phrases.map(&:join).join(' ')}
+      message = "ここで一句、 #{haiku.sample} なのだ〜♪"
+    when 2
+      nm.parse(tweets) do |n|
+        next unless(n.feature.split(',')[2] == '地域')
+        words << n.surface
+      end
+      word = words.sample
+      message = "今度シーナさんと一緒に#{word}へ予定なのだ♪楽しみなのだ♪"
     end
-    word = words.sample
-    TwitterBot.new(message: "わぁ～#{word}なのだ～♪　われは#{word}に目がないのだ♪").tweet
+    TwitterBot.new(message: message).tweet
   end
   
   desc "告知ツイート confg/schedule.rb参照"
