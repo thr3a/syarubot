@@ -51,6 +51,20 @@ namespace :bot do
             user.siritori(match[1].strip.match(/(.+)駅$/)[1])
             TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
           end
+        # 難読駅名クイズ返答
+        when /難読.*登録/
+          station = match[1].strip.match(/^(.+?)駅/)[1]
+          if target = Station.find_by(name_orig: station)
+            if target.nandoku_flag
+              message = "どうやらその駅はすでに登録済なのだ♪ 他にあればわれに教えてほしいのだ♪"
+            else
+              target.update(nandoku_flag: true)
+              message = "難読駅名クイズに登録したのだ♪ 他にもあればわれに教えてほしいのだ♪"
+            end
+          else
+            message = "われはそんな駅知らないのだ♪ 他にあればわれに教えてほしいのだ♪"
+          end
+          TwitterBot.new(message: message, scname: tweet.user.screen_name, reply_to: tweet.id).tweet
         # 難読駅名クイズスタート
         when /難読/
           user = User.find_or_initialize_by(id: tweet.user.id)
