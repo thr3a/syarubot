@@ -163,9 +163,9 @@ namespace :bot do
   desc "告知ツイート confg/schedule.rb参照"
   task notice: :environment do
     list = [
-      "われに新ゲーム「ファイブボンバー」が追加されたのだ♪詳しくはURLを見るのだ♪ https://thr3a.github.io/post/2016/11/01/fivebomberv2/",
       "われの問題に答えられなかったら「パス」とリプするのだ♪",
-      "駅名しりとり以外でも、われと遊べるのだ♪ https://thr3a.github.io/post/help/"
+      "「使い方教えて」とリプするとわれが案内するのだ♪ https://thr3a.github.io/post/help/",
+      "われに難読駅を教えるとクイズに出題されるのだ♪ 詳しくは https://thr3a.github.io/post/2016/11/03/add-nandoku-question/"
     ]
     TwitterBot.new(message: "【定期】 #{list.sample} #{Time.now.strftime('%F %R')}").tweet
   end
