@@ -38,4 +38,5 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+  config.mecab_dic_path = "/usr/local/lib/mecab/dic/mecab-ipadic-neologd"
 end

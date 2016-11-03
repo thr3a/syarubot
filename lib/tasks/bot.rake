@@ -137,7 +137,7 @@ namespace :bot do
     words = []
     tweets = TwitterBot.new.get_timeline
     tweets = tweets.map {|t|t.text.gsub(/#{exclude_regex}/, '')}.join(' ')
-    nm = Natto::MeCab.new(dicdir: "/usr/local/lib/mecab/dic/mecab-ipadic-neologd")
+    nm = Natto::MeCab.new(dicdir: Rails.application.config.mecab_dic_path)
     nm.parse(tweets) do |n|
       next unless(n.feature.split(',')[0] == '名詞' && n.surface.length > 1)
       words << n.surface
