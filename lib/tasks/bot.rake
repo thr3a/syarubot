@@ -43,11 +43,7 @@ namespace :bot do
             user.name = tweet.user.name
             user.save!
           end
-          if match[1].match(/ハード/)
-            user.initialize_hard_siritori
-          else
-            user.initialize_siritori
-          end
+          user.initialize_siritori
           TwitterBot.new(message: user.message, scname: user.scname, reply_to: tweet.id).tweet
         # 駅名しりとり返答
         when /駅$/

@@ -42,20 +42,7 @@ class User < ActiveRecord::Base
     self.update game_type: 'siritori', game_condition: bot_answer.name_kana[-1], game_count: 1, game_pass_count: 0
     self.message = "われは駅名しりとり駅得意なのだ♪ まずはわれの番、#{bot_answer.name}駅(#{bot_answer.name_kana})なのだ!つぎは「#{self.game_condition}」なのだ♪"
   end
-  
-  # def initialize_hard_siritori
-  #   if self.game_type == 'hard_siritori'
-  #     bot_answer = Station.get_random_hard
-  #     self.update siritori_word: bot_answer.name_kana[-1], siritori_cnt: 1
-  #     self.message = "われは駅名し（ﾄﾞｶｯ　シーナ「ふふふ、マスターの相手はわたしよ。せっかくだし漢字2文字に限定するわ。まずは #{bot_answer.name}駅(#{bot_answer.name_kana})だから「#{self.siritori_word}」よ。何問答えられるかしら…"
-  #   else
-  #     bot_answer = Station.get_random
-  #     self.update siritori_word: bot_answer.name_kana[-1], siritori_cnt: 1
-  #     self.message = "われは駅名しりとり駅得意なのだ♪ まずはわれの番、#{bot_answer.name}駅(#{bot_answer.name_kana})なのだ!つぎは「#{self.siritori_word}」なのだ♪「東京駅」のように答えるのだ♪"
-  #   end
-  # end
-  
-  
+
   def clear_siritori_session
     self.update(game_type: nil, game_condition: nil, game_count: 0, game_pass_count:0)
   end
