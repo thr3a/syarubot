@@ -6,6 +6,6 @@ every 1.hours, at: [23,46] do
   rbenv_rake "bot:routine"
 end
 
-every 3.hours, at: 45  do
-  rbenv_rake "bot:notice"
-end
+# every 3.hours, at: 45  do
+#   rbenv_rake "bot:notice"
+# end
