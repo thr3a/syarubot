@@ -171,7 +171,7 @@ namespace :bot do
         words << n.surface
       end
       word = words.sample
-      message = "今度シーナさんと一緒に#{word}へ予定なのだ♪楽しみなのだ♪"
+      message = "今度#{word}へシーナさんと一緒に行く予定なのだ♪楽しみなのだ♪"
     end
     TwitterBot.new(message: message).tweet
   end
