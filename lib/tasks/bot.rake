@@ -164,6 +164,7 @@ namespace :bot do
       result = Ikku::Reviewer.new.search(tweets)
       return if result.blank?
       haiku = result.map{|e|e.phrases.map(&:join).join(' ')}
+      haiku.delete_if{|e| e.include?('前日比')} # 前日比 フォローした数 前日比を除外
       message = "ここで一句、 #{haiku.sample} なのだ〜♪"
     when 2
       nm.parse(tweets) do |n|
