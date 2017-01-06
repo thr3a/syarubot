@@ -165,14 +165,14 @@ namespace :bot do
       return if result.blank?
       haiku = result.map{|e|e.phrases.map(&:join).join(' ')}
       haiku.delete_if{|e| e.include?('前日比')} # 前日比 フォローした数 前日比を除外
-      message = "ここで一句、 #{haiku.sample} なのだ〜♪"
+      message = "ここで一句、 #{haiku.sample} なのだ〜♪ #シャル川柳"
     when 2
       nm.parse(tweets) do |n|
         next unless(n.feature.split(',')[2] == '地域')
         words << n.surface
       end
       word = words.sample
-      message = "今度#{word}へシーナさんと一緒に行く予定なのだ♪楽しみなのだ♪"
+      message = "今度シーナさんと#{word}へ行く予定なのだ♪楽しみなのだ♪"
     end
     TwitterBot.new(message: message).tweet
   end
